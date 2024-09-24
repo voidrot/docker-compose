@@ -6,4 +6,9 @@ each project is fully selfcontained and includes a example `.env` file that cont
 
 ## Project List
 
-- [linkwarden](/linkwarden/compose.yml)
+- [Linkwarden](/linkwarden/compose.yml)
+- [VaultWarden](/vaultwarden/compose.yml)
+- [Minio](/minio/compose.yml)
+- [pgAdmin4](/pgadmin/compose.yml)
+- [Prometheus Stack](/prom_stack/compose.yml)
+- [postgreSQL](/postgres/compose.yml)

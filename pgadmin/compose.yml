@@ -1,0 +1,18 @@
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "8080:80"
+
+volumes:
+  pgadmin_data:

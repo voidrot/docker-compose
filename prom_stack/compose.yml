@@ -1,0 +1,73 @@
+services:
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+    ports:
+      - "3000:3000"
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.external-url=${PROMETHEUS_EXTERNAL_URL}
+      - --web.enable-lifecycle
+      - --web.enable-admin-api
+      - --web.enable-remote-write-receiver
+      - --storage.tsdb.retention.time=90d
+      # enable to limit storage by size
+      #- --storage.tsdb.retention.size=200GB
+      - --enable-feature=exemplar-storage,memory-snapshot-on-shutdown,new-service-discovery-manager,concurrent-rule-eval
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus/config:/etc/prometheus
+    ports:
+      - "9090:9090"
+  loki:
+    image: grafana/loki:main
+    restart: unless-stopped
+    # enable if using custom config
+    # command:
+    #   - "-config.file=/etc/loki/loki.yml"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "25m"
+    volumes:
+      - loki_data:/loki
+      # enable custom loki configuration
+      # - ./loki/loki.yml:/etc/loki/loki.yml
+    ports:
+      - "3100:3100"
+      - "9096:9096"
+  # blackbox_exporter:
+  #   image: prom/blackbox-exporter
+  #   restart: unless-stopped
+  #   command: --config.file=/etc/blackbox/blackbox.yml
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "25m"
+  #   volumes:
+  #     - ./blackbox_exporter/config.yml:/etc/blackbox/blackbox.yml
+  #   ports:
+  #     - "9115:9115"
+
+volumes:
+  grafana_data:
+  prometheus_data:
+  loki_data:
